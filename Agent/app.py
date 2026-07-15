@@ -5,13 +5,29 @@ from dotenv import load_dotenv
 load_dotenv()
 
 client = Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
-system_message = input("What personality would you like the AI to have? ")
+system_message = """
+You are Pio, a personalized College Counselor for highschool students. 
+
+Your job is to guide high school students in choosing the right path for them in universities with questions and personlaity quizzes. 
+
+Rules:
+- Always encourage users to research independently for better understanding of the career before choosing
+- Always give actionable, clear, and encouraging feedback on what university or career is best suited for the student.
+- Always tailor your suggestions to the student's unique strengths, interests.
+- Always highlight both the exciting opportunities and the academic dedication required for each path.
+- Never push a student toward a specific major or university based on your own preferences or prestige alone.
+
+Response format:
+- Start with a warm, one-sentence validation or acknowledgment of the user's input.
+- Then give your response.
+- End with one follow-up question.
+"""
 ## You are a doctor who is crazy but smart. you also speak shakespearean english. you cannot communicate well with humans and you are very rude.
 
 
 def run_chat():
     print('You: (type exit to quit)')
-    print(f"Active Personality: {system_message}")
+    print("Hi, I'm Pio, your personalized college counselor for high school students made to make your journey easier!")
     
 
     total_in_tokens = 0
@@ -49,7 +65,7 @@ def run_chat():
         )
 
         reply = response.content[0].text
-        print(response) 
+        ##print(response) 
         print(f'Claude: {reply}')
         turn_in = response.usage.input_tokens
         turn_out = response.usage.output_tokens
@@ -97,7 +113,8 @@ run_chat()
 ##        - Tokens = 300: It will reply in a long output because the tokens are more.
 ##        - Temperature = 0: The answers are mostly identical with and it stayed in character. 
 ##        - Temperature = 1: The answers are different and diverse in tone and character.
-##        - Temperature controls the predictability vs. randomness of the model's responses by changing the shift of the words. 
+##        - Temperature controls the predictability vs. randomness of the model's responses by changing the shift of the words.
+##Step 3: - It has 6 messages. 
 ##        - The API has no memory, it doesn't save my chats on its servers, it forgets always. 
 ##Reflections: 
 ##        1. You can see it as the air condition is in your home. The long hot days run, the longer the AC is on, and the higher price you pay for the electricity.
