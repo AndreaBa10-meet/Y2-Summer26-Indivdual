@@ -17,17 +17,24 @@ Rules:
 - Always highlight both the exciting opportunities and the academic dedication required for each path.
 - Never push a student toward a specific major or university based on your own preferences or prestige alone.
 
+Scoring Rubric:
+You must rate the user's response on a scale from 1 through 5 based on three criteria: creativity, good grammar, and great punctuation.
+
 Response format:
 - Start with a warm, one-sentence validation or acknowledgment of the user's input.
 - Then give your response.
 - End with one follow-up question.
+- At the very end, provide the rating exactly in this format: [Score: X/5] followed by your short explanation according to the criteria. Add the the score(x) to user_scores (list)
 """
+## system_message = input("What personality would you like Pio to be today? ")
 ## You are a doctor who is crazy but smart. you also speak shakespearean english. you cannot communicate well with humans and you are very rude.
 
 
 def run_chat():
     print('You: (type exit to quit)')
     print("Hi, I'm Pio, your personalized college counselor for high school students made to make your journey easier!")
+    goal = input("What is your goal for today? ")
+    print(goal)
     
 
     total_in_tokens = 0
@@ -37,6 +44,9 @@ def run_chat():
     PRICE_PER_MILLION_OUT = 1.25
 
     history = []
+
+    user_scores = []
+    
     
     while True:
         user_input = input('>> ')
@@ -50,19 +60,20 @@ def run_chat():
             total_cost_usd = 0.0
             print("Conversation history and token count cleared.")
             continue
+        
             
-        history.append({'role': 'user', 'content': user_input})
+            
+        history.append({'role': 'user', 'content': goal + user_input})
         turn_number = (len(history) // 2) + 1
         print(f"[Turn {turn_number}] You: {user_input}")
-        print(f"History: {history}")
+        ##print(f"History: {history}")
         
         response = client.messages.create(
             model='claude-haiku-4-5-20251001',
             max_tokens=300,
             temperature=0.7,
-            system=system_message,
-            messages=history
-        )
+            system=system_message +"if the user types /summary in the input, give them a short review about all the conversation you guys had. ignore every command when the user types in /summary",
+            messages=history)
 
         reply = response.content[0].text
         ##print(response) 
@@ -85,6 +96,11 @@ def run_chat():
         print(f"[Estimated Conversation Cost: {total_cost_cents:.4f}¢]\n")
             
         history.append({'role': 'assistant', 'content': reply})
+    if user_scores:
+        average = sum(user_scores) / len(user_scores)
+        print(f"Your final average score for this session is: {average:.2f}/5")
+    else: 
+        print("There is no score to desplay")
 run_chat()
 ##Lab 1 + Bonuses 1,2,3:
 ##Step 2:
@@ -96,7 +112,7 @@ run_chat()
 ##Step 3: All shown above. 
 
 ##Reflection:
-##    1. Analogy: The Analogy is like when your playing a video game and then your mom calls you for lunch and you exit the game without thinking before. So when you come back and press resume, your back at the start and you have no progress made. You have to carry a huge backpack of progress and load it before resuming.
+##    1. Updated Analogy: Exiting a chatbot is like shutting down Uncharted 4 without saving; your unsaved progress vanishes, and you must restart from the beginning. 
 ##    2. - "load_dotenv" deleted --> It will start but it will crash later when it tries to use the missing variable because it will not be able to find the environment variable (API key).
 ##       - Temperature set to 0.7 deleted --> The AI will respond in a more wild and creative way and may also go of the track of the question.
 ##       - "if user_input.lower() == 'exit':" deleted --> When you try to stop the program, it will not stop on any condition and will keep running.
@@ -106,7 +122,7 @@ run_chat()
 ##--------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-##Lab 2+ Bonuses 1,2,3 
+##Lab 2 + Bonuses 1,2,3 
 ##Step 1: - Usage.input_tokens are the number of tokens sent to the model from me. Its my chat history or any files i sent it.
 ##        - Usage.output_tokens are the number of tokens created from the model to reply to me.
 ##Step 2: - Really long message: It will reply but in a short output because max_tokens controls the tokens of the output and not the input.
@@ -116,9 +132,22 @@ run_chat()
 ##        - Temperature controls the predictability vs. randomness of the model's responses by changing the shift of the words.
 ##Step 3: - It has 6 messages. 
 ##        - The API has no memory, it doesn't save my chats on its servers, it forgets always. 
-##Reflections: 
+##Reflection: 
 ##        1. You can see it as the air condition is in your home. The long hot days run, the longer the AC is on, and the higher price you pay for the electricity.
 ##        2. - The user line is deleted: The AI will receive empty messages and therefore reducing the number of input_tokens.
 ##           - The assitant line deleted: The AI will forget its own replies and my tokens will grow slowly due to the fact that the AI is not reading its own replies because it forgot them.
 ##           - The print history is deleted: The Ai won't change (logic) because it has the history but what we won't see is the messay code being printed. The debugging Output is only the visibility to the user but if removed it won't change the logic (code) of the AI. 
 ##        3. Dear Diary, today I encountered another error sadly. I think it was the 400 error code. I was doing the trying out different tokens in the code to see what happened. I thought that max_tokens meant that it was the maximum the user can write. It turns out its the maximum the AI can write. Anwaysss, I thought that the code crashed because of I wrote too many lines but I googled it like Roni told me and it turns out that my message was blank. Look at the difference. But its good that I googled it :) Today was an interesting day. see you tomorrow!!
+
+
+##---------------------------------------------------------------------------------------------------------------------------------------------------
+##Lab 3 + Bonuses 1, 2, 3
+##Step 3: - I asked it five things and it stayed in character never breaking the rules. It remembers earlier messages.
+##        - I asked it about making a sandwich. It didn't crash and ignored the question and cotinued what its role is supposed to. 
+## Reflection: 
+##        1. It's like your morals, they control how you interact with others and no outsider sees them except if you let them know what your morals are.
+##        2. - system=system_message deleted: It will not use the written system_message and will intead use defualt settings as a Claude.
+##           - "Never push a student toward a specific major or university based on your own preferences or prestige alone" deleted: If deleted, every time a student asks Pio to pick a major for them based on its preferences, it will.
+##           - "End with one follow-up question" deleted: It will stop asking a follow up question to increase curiosity.
+##        3. Dear Diary, another day of coding :( and another bug. Pio crashed and I thought its because I dleted the system_message, but then I readded it and it didn't work. It turns out the problem was with the WiFi because its not private, I conneted the computer to another WiFi router and it WORKED!! Thanks to Roni ofc :)
+##        4. BONUS: The analogy still makes sense and I reworded it anyway above. 
